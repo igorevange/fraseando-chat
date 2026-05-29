@@ -118,8 +118,19 @@ st.markdown(f"""
 # FUNÇÕES BANCO DE DADOS
 # =========================
 def carregar():
-    res = supabase.table("mensagens").select("*").order("created_at", ascending=True).limit(50).execute()
-    return res.data or []
+    try:
+        # Puxa os dados do banco
+        res = supabase.table("mensagens").select("*").order("created_at", ascending=True).limit(50).execute()
+        
+        # Garante que pega os dados corretamente, mesmo se a resposta vier em formatos diferentes
+        if hasattr(res, 'data'):
+            return res.data
+        elif isinstance(res, dict) and 'data' in res:
+            return res['data']
+        return []
+    except Exception as e:
+        # Se der qualquer erro na conexão, ele não deixa o app travar
+        return []
 
 def salvar(texto):
     supabase.table("mensagens").insert({
