@@ -176,8 +176,8 @@ def exibir_historico_tempo_real():
             reverse=True
         )
         
-        # Cria as abas. A aba "💬 Hoje" sempre encabeça a lista à esquerda
-        titulos_abas = ["💬 Hoje"] + dias_passados
+        # Cria as abas. A aba "📅 Hoje" sempre encabeça a lista à esquerda
+        titulos_abas = ["📅 Hoje"] + dias_passados
         abas_criadas = st.tabs(titulos_abas)
 
         # Renderizador interno de bolhas de mensagem
