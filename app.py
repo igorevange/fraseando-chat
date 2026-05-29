@@ -1,5 +1,4 @@
 import streamlit as st
-import streamlit.components.v1 as components
 from supabase import create_client, Client
 import datetime
 import pandas as pd
@@ -9,39 +8,19 @@ import pandas as pd
 # ==========================================
 st.set_page_config(page_title="Chat do Casal", page_icon="💬", layout="centered")
 
-# Estilização básica para o visual escuro e tags de tempo
+# Estilização limpa para o visual escuro e tags de tempo
 st.markdown("""
 <style>
     .stApp { background-color: #121212; color: #FFFFFF; }
     .keyword-tag { font-size: 11px; font-style: italic; color: #FFB7B2; display: block; margin-top: 4px; }
     .time-tag { font-size: 10px; color: #888888; float: right; margin-top: 4px; }
     
-    /* Margem na base para garantir que o input fixo não tampe as mensagens/alertas */
+    /* Apenas uma margem segura para a última mensagem não sumir atrás do input fixo */
     .main .block-container {
-        padding-bottom: 140px !important;
+        padding-bottom: 110px !important;
     }
 </style>
 """, unsafe_allow_html=True)
-
-# Script injetado via componente que força o scroll da janela inteira para o final absoluto
-def injetar_scroll_automatico():
-    components.html(
-        """
-        <script>
-            function rolarFim() {
-                // Rola a página do Streamlit de dentro para fora
-                window.parent.scrollTo({
-                    top: window.parent.document.body.scrollHeight,
-                    behavior: 'smooth'
-                });
-            }
-            // Executa imediatamente e garante uma execução 300ms depois (tempo do Streamlit renderizar o erro)
-            rolarFim();
-            setTimeout(rolarFim, 300);
-        </script>
-        """,
-        height=0, # Invisível na tela
-    )
 
 # ==========================================
 # CONEXÃO COM O SUPABASE (Puxando dos Secrets)
@@ -126,6 +105,7 @@ if lista_mensagens:
     for m in lista_mensagens:
         msg_usuario = m.get("usuario")
         
+        # Define o ÍCONE e o NOME de quem enviou
         if msg_usuario == "be":
             avatar_icone = "🦇"
             nome_exibicao = "Bê" if user == "be" else "Meu Bê"
@@ -136,11 +116,13 @@ if lista_mensagens:
             avatar_icone = "👤"
             nome_exibicao = msg_usuario
 
+        # Define o LADO da tela (user = direita, assistant = esquerda)
         if msg_usuario == user:
             lado_tela = "user"
         else:
             lado_tela = "assistant"
 
+        # TRATAMENTO SEGURO DA DATA E HORÁRIO (Usando Pandas)
         carimbo_tempo = ""
         criado_em = m.get("created_at")
         
@@ -171,7 +153,6 @@ msg_input = st.chat_input("Digite sua mensagem para o seu amor...")
 if msg_input:
     if msg_input.strip() == "":
         st.warning("Por favor, digite uma mensagem antes de enviar.")
-        injetar_scroll_automatico()
     else:
         palavra_atual = st.session_state.palavra.lower()
         if palavra_atual in msg_input.lower():
@@ -179,10 +160,3 @@ if msg_input:
                 st.rerun()
         else:
             st.error("Sua frase não contém a palavra do dia! Tente novamente.")
-            # Quando a mensagem de erro vermelha aparece, chamamos o injetor para descer a tela
-            injetar_scroll_automatico()
-
-# Mantém a tela na base ao carregar o histórico inicialmente
-if "inicializado" not in st.session_state:
-    st.session_state.inicializado = True
-    injetar_scroll_automatico()
