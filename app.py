@@ -34,54 +34,44 @@ supabase: Client = create_client(url, key)
 # ==========================================
 def palavra_do_dia():
     palavras = [
-        # 1-40
-        "espelho", "romantismo", "cafuné", "destino", "sussurro", "jardim", "arrepio", "pipoca", "cinema", "almofada",
+        "espelho", "morango", "cafuné", "destino", "sussurro", "jardim", "arrepio", "pipoca", "cinema", "almofada",
         "coberta", "chocolate", "abraço", "segredo", "canção", "viagem", "provocação", "parque", "sorvete", "beijo",
         "nuvem", "estrela", "sol", "chuva", "mordida", "mar", "praia", "concha", "farol", "barco",
         "bússola", "mapa", "tesouro", "chave", "cadeado", "carta", "romance", "fotografia", "quadro", "moldura",
-        # 41-80
         "instante", "flor", "pétala", "perfume", "aroma", "tempero", "receita", "pegada", "jantar", "vela",
-        "fogo", "lareira", "faísca", "furacão", "inverno", "outono", "primavera", "verão", "sol do dia", "amanhecer",
+        "fogo", "lareira", "faísca", "furacão", "inverno", "outono", "primavera", "verão", "alvorada", "amanhecer",
         "entardecer", "crepúsculo", "noite", "madrugada", "relógio", "tempo", "lingerie", "agenda", "plano", "sonho",
         "desejo", "promessa", "aliança", "anel", "colar", "pulseira", "brinco", "cumplicidade", "pente", "escova",
-        # 81-120
         "toalha", "banho", "espuma", "bolha", "sabonete", "malícia", "sedução", "essência", "roupa", "casaco",
         "intimidade", "sapato", "chinelo", "pijama", "cama", "lençol", "travesseiro", "colchão", "quarto", "sala",
         "cozinha", "varanda", "quintal", "portão", "janela", "cortina", "tapete", "sofá", "poltrona", "estante",
         "livro", "página", "capítulo", "história", "conto", "poesia", "verso", "rima", "música", "nota",
-        # 121-160
         "acorde", "ritmo", "dança", "passo", "baile", "festa", "balão", "confete", "bolo", "doce",
         "bala", "chiclete", "pirulito", "gelatina", "pudim", "torta", "mousse", "fantasia", "picolé", "luxúria",
         "calor", "entrega", "ataque", "conquista", "carinho", "calafrio", "adrenalina", "batom", "instinto", "calcanhar",
         "nuca", "enlace", "sedutor", "magnetismo", "repuxo", "fetiche", "proximidade", "quentura", "pele", "toque",
-        # 161-200
         "coco", "castanha", "noz", "amêndoa", "amendoim", "delírio", "biscoito", "bolacha", "pão", "torrada",
         "manteiga", "requeijão", "queijo", "presunto", "ovo", "omelete", "tapioca", "cereal", "leite", "iogurte",
-        "suco", "chá", "café", "carinho", "achocolatado", "água", "aconchego", "cerveja", "vinho", "champanhe",
+        "suco", "chá", "café", "vermelho", "achocolatado", "água", "aconchego", "cerveja", "vinho", "champanhe",
         "coquetel", "gelo", "tentação", "hortelã", "canela", "cravo", "baunilha", "mel", "açúcar", "adoçante",
-        # 201-240
         "sal", "pimenta", "azeite", "vinagre", "alho", "cebola", "tomate", "alface", "cenoura", "batata",
         "arroz", "feijão", "macarrão", "carne", "frango", "peixe", "camarão", "sushi", "pizza", "hambúrguer",
-        "pastel", "coxinha", "pão de queijo", "empada", "folhado", "croissant", "waffle", "panqueca", "crepe", "churros",
-        "sabor", "algodão doce", "maçã do amor", "carrossel", "montanha russa", "roda gigante", "namorados", "circo", "teatro", "show",
-        # 241-280
+        "pastel", "coxinha", "broche", "empada", "folhado", "croissant", "waffle", "panqueca", "crepe", "churros",
+        "sabor", "afeto", "carrossel", "atração", "circo", "teatro", "show", "azul", "fidelidade", "sinceridade",
         "concerto", "museu", "exposição", "galeria", "arte", "pintura", "escultura", "desenho", "esboço", "grafite",
         "mural", "parede", "teto", "chão", "encontro", "pufe", "rede", "balanço", "cadeira",
         "mesa", "balcão", "armário", "gaveta", "prateleira", "cabide", "olhar", "paixão", "luminária",
-        "lustre", "abajur", "chama", "castiçal", "fósforo", "isqueiro", "lanterna", "afeto", "poste", "luz",
-        # 281-320
+        "lustre", "abajur", "chama", "castiçal", "fósforo", "isqueiro", "lanterna", "rosa", "poste", "luz",
         "sombra", "reflexo", "brilho", "garganta", "suspiro", "fumaça", "cinza", "carvão", "lenha",
-        "sintonia", "aquecedor", "ventilador", "ar condicionado", "clima", "previsão", "sorriso", "céu", "azul",
-        "branco", "preto", "vermelho", "rosa", "azul marinho", "verde", "amarelo", "roxo",
-        "violeta", "lilás", "marrom", "bege", "dourado", "prateado", "bronze", "arco-íris", "prisma", "lente",
-        "óculos", "enlace", "olho", "cílio", "sobrancelha", "testa", "bochecha", "nariz", "boca", "lábio",
-        # 321-366
-        "dente", "língua", "queixo", "pescoço", "ombro", "braço", "cotovelo", "pulso", "mão", "dedo",
-        "unha", "palma", "peito", "coração", "batida", "respiração", "fôlego", "gargalhada", "risada",
-        "covinha", "piscada", "aceno", "gesto", "cócegas", "brincadeira", "susto", "surpresa",
+        "sintonia", "aquecedor", "ventilador", "ar condicionado", "clima", "previsão", "sorriso", "céu", "verde",
+        "branco", "preto", "amarelo", "roxo", "violeta", "lilás", "marrom", "bege", "dourado", "prateado",
+        "bronze", "arco-íris", "prisma", "lente", "óculos", "olho", "cílio", "sobrancelha", "testa", "bochecha",
+        "nariz", "boca", "lábio", "dente", "língua", "queixo", "pescoço", "ombro", "braço", "cotovelo",
+        "pulso", "mão", "dedo", "unha", "palma", "peito", "coração", "batida", "respiração", "fôlego",
+        "gargalhada", "risada", "covinha", "piscada", "aceno", "gesto", "cócegas", "brincadeira", "susto", "surpresa",
         "presente", "embrulho", "laço", "fita", "papel", "cartão", "mensagem", "notificação", "ligação", "conversa",
-        "papo", "áudio", "vídeo", "foto", "selfie", "lembrança", "memória", "passado", "presente do dia", "futuro",
-        "charme", "pegada", "fidelidade", "atração", "sinceridade", "fascínio"
+        "papo", "áudio", "vídeo", "foto", "selfie", "lembrança", "memória", "passado", "futuro", "charme",
+        "fascínio"
     ]
     
     # O tm_yday vai de 1 até 366 em anos bissextos
