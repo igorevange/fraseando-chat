@@ -59,7 +59,8 @@ user = st.session_state.user
 # ==========================================
 # CABEÇALHO DO APP
 # ==========================================
-st.markdown(f"### 💬 Chat Privado • *Palavra do Dia:* **{st.session_state.palavra}**")
+st.markdown(f"### 💬 Chat Privado •")
+st.markdown(f"### *Palavra do Dia:* **{st.session_state.palavra}**")
 
 # ==========================================
 # FUNÇÕES DO BANCO DE DADOS
