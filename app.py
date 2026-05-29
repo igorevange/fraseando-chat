@@ -149,7 +149,7 @@ else:
 st.markdown("---")
 
 with st.form(key="formulario_chat", clear_on_submit=True):
-    msg_input = st.text_input("Digite sua mensagem:", placeholder="Sua frase precisa conter a palavra do dia de hoje...")
+    msg_input = st.text_input("Digite sua mensagem:", placeholder="Sua frase precisa conter a palavra do dia...")
     botao_enviar = st.form_submit_button(label="Enviar Mensagem")
 
     if botao_enviar:
