@@ -169,4 +169,4 @@ if msg_input is not None:
             if salvar(msg_input):
                 st.rerun() 
         else:
-            st.error("Seu lesado(a), tua frase não contém a palavra do dia! Tente novamente.")
+            st.error("Oh lesado(a), tua frase não contém a palavra do dia! Tente novamente.")
