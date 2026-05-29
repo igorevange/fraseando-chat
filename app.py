@@ -15,9 +15,9 @@ st.markdown("""
     .keyword-tag { font-size: 11px; font-style: italic; color: #FFB7B2; display: block; margin-top: 4px; }
     .time-tag { font-size: 10px; color: #888888; float: right; margin-top: 4px; }
     
-    /* Apenas uma margem segura para a última mensagem não sumir atrás do input fixo */
+    /* Margem segura para a última mensagem não sumir atrás do input fixo */
     .main .block-container {
-        padding-bottom: 110px !important;
+        padding-bottom: 120px !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -80,7 +80,6 @@ def carregar():
                 pass
         return dados
     except Exception as e:
-        st.sidebar.error(f"Erro ao ler histórico: {str(e)}")
         return []
 
 def salvar(texto):
@@ -97,53 +96,60 @@ def salvar(texto):
         return False
 
 # ==========================================
-# CARREGAMENTO E EXIBIÇÃO DO HISTÓRICO
+# BLOCO DO HISTÓRICO EM TEMPO REAL (Fragment)
 # ==========================================
-lista_mensagens = carregar()
+# O decorator @st.fragment faz apenas este bloco se atualizar em segundo plano,
+# buscando novas mensagens a cada 1 segundo sem travar a digitação do usuário.
+@st.fragment(run_every=1.0)
+def exibir_historico_tempo_real():
+    lista_mensagens = carregar()
 
-if lista_mensagens:
-    for m in lista_mensagens:
-        msg_usuario = m.get("usuario")
-        
-        # Define o ÍCONE e o NOME de quem enviou
-        if msg_usuario == "be":
-            avatar_icone = "🦇"
-            nome_exibicao = "Bê" if user == "be" else "Meu Bê"
-        elif msg_usuario == "macaquinha":
-            avatar_icone = "🐵"
-            nome_exibicao = "Macaquinha" if user == "macaquinha" else "Minha Macaquinha 💜"
-        else:
-            avatar_icone = "👤"
-            nome_exibicao = msg_usuario
+    if lista_mensagens:
+        for m in lista_mensagens:
+            msg_usuario = m.get("usuario")
+            
+            # Define o ÍCONE e o NOME de quem enviou
+            if msg_usuario == "be":
+                avatar_icone = "🦇"
+                nome_exibicao = "Bê" if user == "be" else "Meu Bê"
+            elif msg_usuario == "macaquinha":
+                avatar_icone = "🐵"
+                nome_exibicao = "Macaquinha" if user == "macaquinha" else "Minha Macaquinha 💜"
+            else:
+                avatar_icone = "👤"
+                nome_exibicao = msg_usuario
 
-        # Define o LADO da tela (user = direita, assistant = esquerda)
-        if msg_usuario == user:
-            lado_tela = "user"
-        else:
-            lado_tela = "assistant"
+            # Define o LADO da tela (user = direita, assistant = esquerda)
+            if msg_usuario == user:
+                lado_tela = "user"
+            else:
+                lado_tela = "assistant"
 
-        # TRATAMENTO SEGURO DA DATA E HORÁRIO (Usando Pandas)
-        carimbo_tempo = ""
-        criado_em = m.get("created_at")
-        
-        if criado_em:
-            try:
-                dt = pd.to_datetime(criado_em, utc=True)
-                dt_brasil = dt.tz_convert("America/Sao_Paulo")
-                carimbo_tempo = dt_brasil.strftime("%d/%m/%Y %H:%M")
-            except:
-                carimbo_tempo = ""
+            # TRATAMENTO SEGURO DA DATA E HORÁRIO (Usando Pandas)
+            carimbo_tempo = ""
+            criado_em = m.get("created_at")
+            
+            if criado_em:
+                try:
+                    dt = pd.to_datetime(criado_em, utc=True)
+                    dt_brasil = dt.tz_convert("America/Sao_Paulo")
+                    carimbo_tempo = dt_brasil.strftime("%d/%m/%Y %H:%M")
+                except:
+                    carimbo_tempo = ""
 
-        palavra_salva = m.get('palavra_do_dia', '---')
-        texto_mensagem = m.get('mensagem', '')
+            palavra_salva = m.get('palavra_do_dia', '---')
+            texto_mensagem = m.get('mensagem', '')
 
-        if texto_mensagem:
-            with st.chat_message(lado_tela, avatar=avatar_icone):
-                st.markdown(f"**{nome_exibicao}**")
-                st.write(texto_mensagem)
-                st.markdown(f'<span class="keyword-tag">🔑 Palavra: {palavra_salva}</span> <span class="time-tag">{carimbo_tempo}</span>', unsafe_allow_html=True)
-else:
-    st.info("Nenhuma mensagem enviada ainda. Seja o primeiro a quebrar o gelo com a palavra do dia!")
+            if texto_mensagem:
+                with st.chat_message(lado_tela, avatar=avatar_icone):
+                    st.markdown(f"**{nome_exibicao}**")
+                    st.write(texto_mensagem)
+                    st.markdown(f'<span class="keyword-tag">🔑 Palavra: {palavra_salva}</span> <span class="time-tag">{carimbo_tempo}</span>', unsafe_allow_html=True)
+    else:
+        st.info("Nenhuma mensagem enviada ainda. Seja o primeiro a quebrar o gelo com a palavra do dia!")
+
+# Executa a caixa isolada do histórico
+exibir_historico_tempo_real()
 
 # ==========================================
 # ÁREA DE ENVIO DE MENSAGENS (Fixada na base)
@@ -157,6 +163,6 @@ if msg_input:
         palavra_atual = st.session_state.palavra.lower()
         if palavra_atual in msg_input.lower():
             if salvar(msg_input):
-                st.rerun()
+                st.rerun() # Atualiza o app imediatamente ao enviar
         else:
             st.error("Sua frase não contém a palavra do dia! Tente novamente.")
