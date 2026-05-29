@@ -8,12 +8,14 @@ import pandas as pd
 # ==========================================
 st.set_page_config(page_title="Chat do Casal", page_icon="💬", layout="centered")
 
-# Estilização básica para o visual escuro e tags de tempo
+# Estilização para o visual escuro, tags de tempo e ajuste de margem na base
 st.markdown("""
 <style>
     .stApp { background-color: #121212; color: #FFFFFF; }
     .keyword-tag { font-size: 11px; font-style: italic; color: #FFB7B2; display: block; margin-top: 4px; }
     .time-tag { font-size: 10px; color: #888888; float: right; margin-top: 4px; }
+    /* Adiciona um espaço no final da tela para o input fixo não cobrir a última mensagem */
+    .main .block-container { padding-bottom: 100px; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -103,7 +105,7 @@ if lista_mensagens:
         # Define o ÍCONE e o NOME de quem enviou
         if msg_usuario == "be":
             avatar_icone = "🦇"
-            nome_exibicao = "Bê" if user == "be" else "Meu Bê"
+            nome_exibicao = "Bê" if user == "be" else "Meu Amor (Bê)"
         elif msg_usuario == "macaquinha":
             avatar_icone = "🐵"
             nome_exibicao = "Macaquinha" if user == "macaquinha" else "Minha Macaquinha 💜"
@@ -117,17 +119,14 @@ if lista_mensagens:
         else:
             lado_tela = "assistant"
 
-        # TRATAMENTO SEGURO DA DATA E HORÁRIO (Usando Pandas)
+        # TRATAMENTO SEGURO DA DATA E HORÁRIO
         carimbo_tempo = ""
         criado_em = m.get("created_at")
         
         if criado_em:
             try:
-                # Converte o texto em data e força a interpretação como UTC
                 dt = pd.to_datetime(criado_em, utc=True)
-                # Converte o fuso diretamente para o Horário de Brasília (-3)
                 dt_brasil = dt.tz_convert("America/Sao_Paulo")
-                # Formata exatamente no modelo solicitado: dd/MM/aaaa HH:mm
                 carimbo_tempo = dt_brasil.strftime("%d/%m/%Y %H:%M")
             except:
                 carimbo_tempo = ""
@@ -144,21 +143,20 @@ else:
     st.info("Nenhuma mensagem enviada ainda. Seja o primeiro a quebrar o gelo com a palavra do dia!")
 
 # ==========================================
-# ÁREA DE ENVIO DE MENSAGENS
+# ÁREA DE ENVIO DE MENSAGENS (Fixa na Base com Seta)
 # ==========================================
-st.markdown("---")
+# O st.chat_input cria automaticamente a caixa fixa embaixo com o ícone de envio à direita
+msg_input = st.chat_input("Digite sua mensagem para o seu amor...")
 
-with st.form(key="formulario_chat", clear_on_submit=True):
-    msg_input = st.text_input("Digite sua mensagem:", placeholder="Sua frase precisa conter a palavra do dia...")
-    botao_enviar = st.form_submit_button(label="Enviar Mensagem")
-
-    if botao_enviar:
-        if msg_input.strip() == "":
-            st.warning("Por favor, digite uma mensagem antes de enviar.")
+if msg_input:
+    if msg_input.strip() == "":
+        st.warning("Por favor, digite uma mensagem antes de enviar.")
+    else:
+        palavra_atual = st.session_state.palavra.lower()
+        
+        # Validação obrigatória da palavra do dia
+        if palavra_atual in msg_input.lower():
+            if salvar(msg_input):
+                st.rerun()  # Atualiza a tela instantaneamente
         else:
-            palavra_atual = st.session_state.palavra.lower()
-            if palavra_atual in msg_input.lower():
-                if salvar(msg_input):
-                    st.rerun()
-            else:
-                st.error("Sua frase não contém a palavra do dia! Tente novamente.")
+            st.error("Sua frase não contém a palavra do dia! Tente novamente.")
