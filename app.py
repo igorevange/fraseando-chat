@@ -1,189 +1,129 @@
 import streamlit as st
-from supabase import create_client
+from supabase import create_client, Client
 import datetime
-import re
 
-# =========================
-# CONFIGURAÇÕES DA PÁGINA
-# =========================
-st.set_page_config(page_title="Chat Privado", page_icon="💬", layout="centered")
+# ==========================================
+# CONFIGURAÇÃO DA PÁGINA (Precisa ser o primeiro comando)
+# ==========================================
+st.set_page_config(page_title="Chat do Casal", page_icon="💬", layout="centered")
 
-# =========================
-# CONFIG SUPABASE
-# =========================
-@st.cache_resource
-def init_connection():
-    return create_client(
-        st.secrets["SUPABASE_URL"],
-        st.secrets["SUPABASE_KEY"]
-    )
-
-supabase = init_connection()
-
-# =========================
-# PALAVRAS (365 ciclo)
-# =========================
-PALAVRAS = [
-    "girassol","saudade","janela","origami","café","maré","promessa","labirinto","moletom","silêncio",
-    "constelação","abraço","bússola","tempestade","fotografia","chá","satélite","cobertor","eclipse","suspiro",
-    "mercado","neblina","playlist","oceano","travesseiro","domingo","caminho","vento","areia","espelho",
-    "caderno","caneta","floresta","lua","sol","chuva","noite","manhã","tarde","madrugada"
-] * 10
-
-PALAVRAS = PALAVRAS[:365]
-
-def palavra_do_dia():
-    return PALAVRAS[datetime.date.today().timetuple().tm_yday % len(PALAVRAS)]
-
-# =========================
-# LOGIN
-# =========================
-if "user" not in st.session_state:
-    st.markdown("## 💬 Chat do Casal")
-    user = st.text_input("Código (amor1 / amor2)", type="password")
-    
-    if st.button("Entrar"):
-        if user in ["amor1", "amor2"]:
-            st.session_state.user = user
-            st.rerun()
-        else:
-            st.error("Código inválido")
-    st.stop()
-
-user = st.session_state.user
-
-# =========================
-# UI STYLE (APP FEEL)
-# =========================
-st.markdown(f"""
+# Estilização em CSS para o visual do Chat (Cores escuras e Bolhas)
+st.markdown("""
 <style>
-    /* Remove elementos padrão do Streamlit */
-    header, footer, #MainMenu {{visibility: hidden !important;}}
-    .stAppDeployButton {{display: none !important;}}
-    
-    /* Estilização do fundo e container */
-    .stApp {{
-        background-color: #151515;
-    }}
-    
-    /* Customização das bolhas nativas do Streamlit */
-    div[data-testid="stChatMessage"] {{
-        background-color: #2A2A2A !important;
-        border-radius: 14px !important;
-        color: #EAEAEA !important;
-        margin-bottom: 8px !important;
-    }}
-    
-    /* Se a mensagem for minha (User) muda a cor */
-    div[data-testid="stChatMessage"]:has(div[data-testid="stChatMessageAvatar"] p:contains("{user}")) {{
-        background-color: #5A1D27 !important;
-    }}
-    
-    /* Esconde os avatares padrão para parecer chat limpo */
-    div[data-testid="stChatMessageAvatar"] {{
-        display: none !important;
-    }}
-    
-    /* Destaque da palavra do dia */
-    .highlight {{
-        background: #8B2E43;
-        padding: 2px 6px;
-        border-radius: 6px;
-        font-weight: 700;
-        color: #FFFFFF;
-    }}
-
-    /* Intercepta o st.error e aplica o tremor (SHAKE EFFECT) */
-    div[data-testid="stNotification"] {{
-        animation: shake 0.4s ease-in-out;
-        border: 1px solid #C4455F !important;
-        background-color: #2D1419 !important;
-        color: #FFD6DE !important;
-    }}
-
-    /* Animação do tremor */
-    @keyframes shake {{
-        0% {{ transform: translateX(0); }}
-        15% {{ transform: translateX(-8px); }}
-        30% {{ transform: translateX(6px); }}
-        45% {{ transform: translateX(-6px); }}
-        60% {{ transform: translateX(4px); }}
-        75% {{ transform: translateX(-2px); }}
-        100% {{ transform: translateX(0); }}
-    }}
+    .stApp { background-color: #121212; color: #FFFFFF; }
+    .chat-container { display: flex; flex-direction: column; gap: 10px; padding: 10px; }
+    .bubble { padding: 12px 16px; border-radius: 20px; max-width: 75%; font-size: 16px; margin-bottom: 2px; word-wrap: break-word; }
+    .user-bubble { background-color: #5A1D27; color: #FFFFFF; align-self: flex-end; border-bottom-right-radius: 2px; }
+    .partner-bubble { background-color: #2A2A2A; color: #E0E0E0; align-self: flex-start; border-bottom-left-radius: 2px; }
+    .metadata { font-size: 11px; color: #888888; margin-top: 4px; display: block; text-align: right; }
+    .partner-bubble .metadata { text-align: left; }
+    .keyword-tag { font-size: 11px; font-style: italic; color: #FFB7B2; display: block; margin-top: 2px; }
 </style>
 """, unsafe_allow_html=True)
 
-# =========================
-# FUNÇÕES BANCO DE DADOS
-# =========================
+# ==========================================
+# CONEXÃO COM O SUPABASE (Puxando dos Secrets)
+# ==========================================
+url = st.secrets["SUPABASE_URL"]
+key = st.secrets["SUPABASE_KEY"]
+supabase: Client = create_client(url, key)
+
+# ==========================================
+# FUNÇÃO DA PALAVRA DO DIA
+# ==========================================
+def palavra_do_dia():
+    # Lista fixa de palavras para cada dia da semana (pode alterar as palavras se quiser)
+    palavras = ["espelho", "café", "abraço", "sorriso", "destino", "bilhete", "luar"]
+    dia_ano = datetime.datetime.now().timetuple().tm_yday
+    indice = dia_ano % len(palavras)
+    return palavras[indice]
+
+# Salva a palavra do dia no estado do app
+st.session_state.palavra = palavra_do_dia()
+
+# ==========================================
+# SISTEMA DE LOGIN (Sem dar pistas na Label)
+# ==========================================
+if "user" not in st.session_state:
+    st.markdown("## 💬 Chat Privado")
+    
+    # Campo oculto por asteriscos
+    user_input = st.text_input("Código de Acesso", type="password")
+    
+    if st.button("Entrar"):
+        if user_input in ["amor1", "amor2"]:
+            st.session_state.user = user_input
+            st.rerun()
+        else:
+            st.error("Código inválido!")
+    st.stop()
+
+# Se chegou aqui, o usuário está logado
+user = st.session_state.user
+
+# ==========================================
+# CABEÇALHO DO APP
+# ==========================================
+st.markdown(f"### 💬 Chat Privado • *Palavra do Dia:* **{st.session_state.palavra}**")
+
+# ==========================================
+# FUNÇÕES DO BANCO DE DADOS (Seguras)
+# ==========================================
 def carregar():
     try:
-        # Puxa os dados do banco
+        # Puxa as últimas 50 mensagens ordenadas por data
         res = supabase.table("mensagens").select("*").order("created_at", ascending=True).limit(50).execute()
         
-        # Garante que pega os dados corretamente, mesmo se a resposta vier em formatos diferentes
+        # Trata o formato de resposta do Supabase (evita travar se estiver vazia)
         if hasattr(res, 'data'):
             return res.data
         elif isinstance(res, dict) and 'data' in res:
             return res['data']
         return []
     except Exception as e:
-        # Se der qualquer erro na conexão, ele não deixa o app travar
+        # Se o banco falhar, o app abre vazio em vez de quebrar na tela
         return []
 
 def salvar(texto):
     try:
-        # Pegamos a palavra do dia com segurança
-        palavra = "Não definida"
-        if "palavra" in st.session_state:
-            palavra = st.session_state.palavra
-        elif hasattr(st, 'session_state') and 'palavra_do_dia' in dir():
-            try:
-                palavra = palavra_do_dia()
-            except:
-                pass
-
-        # Tentativa de envio
+        palavra = st.session_state.get('palavra', 'Não definida')
+        
+        # Envia apenas o essencial. Id e data o Supabase gera sozinho.
         supabase.table("mensagens").insert({
-            "usuario": st.session_state.user,
+            "usuario": user,
             "mensagem": texto,
             "palavra_do_dia": palavra
         }).execute()
-        
     except Exception as e:
-        # ISSO AQUI VAI MOSTRAR O ERRO REAL NA TELA DO CHAT
-        st.error(f"Erro técnico detectado: {str(e)}")
+        # Mostra o erro técnico real na tela caso o banco recuse
+        st.error(f"Erro técnico detectado pelo Supabase: {str(e)}")
 
-def aplicar_highlight(text, word):
-    return re.sub(f"({word})", r"<span class='highlight'>\1</span>", text, flags=re.I)
-
-# =========================
-# RENDERIZAÇÃO DA INTERFACE
-# =========================
-
-# Topbar fixa estilizada
-st.markdown(f"""
-<div style="background: #1E1E1E; padding: 12px; text-align: center; color: #FFD6DE; font-weight: 600; border-bottom: 1px solid #2A2A2A; border-radius: 8px; margin-bottom: 20px;">
-💬 Chat Privado • Palavra do Dia: <span style="color:#FFF; background:#8B2E43; padding: 2px 8px; border-radius:4px;">{palavra_do_dia()}</span>
-</div>
-""", unsafe_allow_html=True)
-
-# Carrega e exibe o histórico de mensagens
+# ==========================================
+# CARREGAMENTO E EXIBIÇÃO DO HISTÓRICO
+# ==========================================
 msgs = carregar()
 
+st.markdown('<div class="chat-container">', unsafe_allow_html=True)
 for m in msgs:
-    origem = "user" if m["usuario"] == user else "assistant"
-    texto_formatado = aplicar_highlight(m["mensagem"], m.get("palavra_do_dia", palavra_do_dia()))
-    time = m["created_at"][11:16] if "created_at" in m else ""
-    
-    with st.chat_message(origem):
-        st.markdown(f"{texto_formatado} <span style='font-size: 11px; color: #9A9A9A; float: right; margin-top: 5px;'>{time}</span>", unsafe_allow_html=True)
-
-# Input de mensagem fixo na parte inferior
-if msg_input := st.chat_input("Digite sua mensagem..."):
-    if palavra_do_dia().lower() not in msg_input.lower():
-        st.error(f"Sua mensagem precisa conter a palavra do dia: {palavra_do_dia()}")
+    # Determina o lado da bolha baseado em quem está olhando o app
+    if m["usuario"] == user:
+        classe_bolha = "user-bubble"
+        identificador = "Você"
     else:
-        salvar(msg_input)
-        st.rerun()
+        classe_bolha = "partner-bubble"
+        identificador = "Amor"
+        
+    # Formata a exibição da hora
+    hora_formatada = ""
+    if "created_at" in m and m["created_at"]:
+        try:
+            # Pega apenas os caracteres do horário (HH:MM)
+            hora_formatada = m["created_at"].split("T")[1][:5]
+        except:
+            hora_formatada = ""
+
+    # Desenha a bolha na tela
+    st.markdown(f"""
+    <div class="bubble {classe_bolha}">
+        {m['mensagem']}
+        <span class="keyword-tag">🔑 Palavra: {m.
