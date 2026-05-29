@@ -133,11 +133,28 @@ def carregar():
         return []
 
 def salvar(texto):
-    supabase.table("mensagens").insert({
-        "usuario": user,
-        "mensagem": texto,
-        "palavra_do_dia": palavra_do_dia()
-    }).execute()
+    try:
+        # Pegamos a palavra do dia com segurança
+        palavra = "Não definida"
+        if "palavra" in st.session_state:
+            palavra = st.session_state.palavra
+        elif hasattr(st, 'session_state') and 'palavra_do_dia' in dir():
+            try:
+                palavra = palavra_do_dia()
+            except:
+                pass
+
+        # Enviamos apenas o essencial para o banco
+        # O 'created_at' e o 'id' o Supabase gera sozinho automaticamente lá!
+        supabase.table("mensagens").insert({
+            "usuario": st.session_state.user,
+            "mensagem": texto,
+            "palavra_do_dia": palavra
+        }).execute()
+        
+    except Exception as e:
+        # Evita que a tela trave com erro técnico se o banco chiar
+        st.error(f"Erro ao salvar mensagem no banco de dados. Verifique a tabela.")
 
 def aplicar_highlight(text, word):
     return re.sub(f"({word})", r"<span class='highlight'>\1</span>", text, flags=re.I)
