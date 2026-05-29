@@ -80,23 +80,18 @@ def carregar():
         return []
 
 def salvar(texto):
-    # Retorna True se salvou com sucesso, ou False se deu erro
     try:
         palavra = st.session_state.get('palavra', 'Não definida')
         
-        # Faz a inserção e força o script a esperar a resposta do servidor
-        resposta = supabase.table("mensagens").insert({
+        # Faz o insert de forma direta e segura
+        supabase.table("mensagens").insert({
             "usuario": user,
             "mensagem": texto,
-            "palavra_do_dia": palabra
+            "palavra_do_dia": palavra
         }).execute()
-        
-        # Se a resposta voltou com dados, a gravação funcionou!
-        if hasattr(resposta, 'data') and len(resposta.data) > 0:
-            return True
-        return False
+        return True
     except Exception as e:
-        # Força o erro real a aparecer na tela para sabermos o motivo
+        # Mostra o erro real na tela caso o Supabase recuse por algum motivo
         st.error(f"Erro ao falar com o banco: {str(e)}")
         return False
 
@@ -149,8 +144,8 @@ with st.form(key="formulario_chat", clear_on_submit=True):
         else:
             palavra_atual = st.session_state.palavra.lower()
             
-            if palabra_atual in msg_input.lower():
-                # Só recarrega a tela se a função retornar que salvou de verdade!
+            # Correção do erro de digitação: trocado 'palabra_atual' por 'palavra_atual'
+            if palavra_atual in msg_input.lower():
                 if salvar(msg_input):
                     st.rerun()
             else:
