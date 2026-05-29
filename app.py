@@ -90,7 +90,7 @@ if "user" not in st.session_state:
     st.markdown("## 💬 Chat Privado")
     user_input = st.text_input("Código de Acesso", type="password")
     if st.button("Entrar"):
-        if user_input in ["be", "macaquinha"]:
+        if user_input in ["be0", "macaquinha"]:
             st.session_state.user = user_input
             st.rerun()
         else:
