@@ -34,45 +34,54 @@ supabase: Client = create_client(url, key)
 # ==========================================
 def palavra_do_dia():
     palavras = [
-        "espelho", "café", "abraço", "sorriso", "destino", "bilhete", "luar", "pipoca", "Cinema", "Almofada",
-        "coberta", "chocolate", "cafuné", "sussurro", "segredo", "canção", "viagem", "parque", "sorvete", "beijo",
-        "nuvem", "estrela", "sol", "chuva", "vento", "mar", "praia", "concha", "Farol", "barco",
-        "bússola", "mapa", "tesouro", "chave", "cadeado", "carta", "carimbo", "fotografia", "quadro", "moldura",
-        "jardim", "flor", "pétala", "perfume", "aroma", "tempero", "receita", "panela", "jantar", "vela",
+        # 1-40
+        "espelho", "morango", "cafuné", "destino", "sussurro", "jardim", "arrepio", "pipoca", "cinema", "almofada",
+        "coberta", "chocolate", "abraço", "segredo", "canção", "viagem", "provocação", "parque", "sorvete", "beijo",
+        "nuvem", "estrela", "sol", "chuva", "mordida", "mar", "praia", "concha", "farol", "barco",
+        "bússola", "mapa", "tesouro", "chave", "cadeado", "carta", "romance", "fotografia", "quadro", "moldura",
+        # 41-80
+        "instante", "flor", "pétala", "perfume", "aroma", "tempero", "receita", "pegada", "jantar", "vela",
         "fogo", "lareira", "faísca", "calor", "inverno", "outono", "primavera", "verão", "sol do dia", "amanhecer",
-        "entardecer", "crepúsculo", "noite", "madrugada", "relógio", "tempo", "calendário", "agenda", "plano", "sonho",
-        "desejo", "promessa", "aliança", "anel", "colar", "pulseira", "brinco", "espelho", "pente", "escova",
-        "toalha", "banho", "espuma", "bolha", "sabonete", "shampoo", "creme", "perfume", "roupa", "casaco",
-        "meia", "sapato", "chinelo", "pijama", "cama", "lençol", "travesseiro", "colchão", "quarto", "sala",
+        "entardecer", "crepúsculo", "noite", "madrugada", "relógio", "tempo", "lingerie", "agenda", "plano", "sonho",
+        "desejo", "promessa", "aliança", "anel", "colar", "pulseira", "brinco", "cumplicidade", "pente", "escova",
+        # 81-120
+        "toalha", "banho", "espuma", "bolha", "sabonete", "malícia", "sedução", "essência", "roupa", "casaco",
+        "intimidade", "sapato", "chinelo", "pijama", "cama", "lençol", "travesseiro", "colchão", "quarto", "sala",
         "cozinha", "varanda", "quintal", "portão", "janela", "cortina", "tapete", "sofá", "poltrona", "estante",
         "livro", "página", "capítulo", "história", "conto", "poesia", "verso", "rima", "música", "nota",
+        # 121-160
         "acorde", "ritmo", "dança", "passo", "baile", "festa", "balão", "confete", "bolo", "doce",
-        "bala", "chiclete", "pirulito", "gelatina", "pudim", "torta", "mousse", "sorvete", "picolé", "fruta",
-        "maçã", "banana", "morango", "uva", "laranja", "limão", "abacaxi", "melancia", "melão", "pêssego",
+        "bala", "chiclete", "pirulito", "gelatina", "pudim", "torta", "mousse", "fantasia", "picolé", "fruta",
+        "maçã", "banana", "ataque", "uva", "laranja", "limão", "abacaxi", "melancia", "melão", "pêssego",
         "ameixa", "cereja", "framboesa", "amora", "mirtilo", "kiwi", "manga", "maracujá", "goiaba", "caju",
-        "coco", "castanha", "noz", "amêndoa", "amendoim", "pipoca", "biscoito", "bolacha", "pão", "torrada",
-        "manteiga", "requeijão", "queijo", "presunto", "ovo", "omelete", "tapioca", "cereal", "leite", "Iogurte",
-        "suco", "chá", "café", "chocolate", "achocolatado", "água", "refrigerante", "cerveja", "vinho", "champanhe",
-        "coquetel", "gelo", "limão", "hortelã", "canela", "cravo", "baunilha", "mel", "açúcar", "adoçante",
+        # 161-200
+        "coco", "castanha", "noz", "amêndoa", "amendoim", "delírio", "biscoito", "bolacha", "pão", "torrada",
+        "manteiga", "requeijão", "queijo", "presunto", "ovo", "omelete", "tapioca", "cereal", "leite", "iogurte",
+        "suco", "chá", "café", "carinho", "achocolatado", "água", "aconchego", "cerveja", "vinho", "champanhe",
+        "coquetel", "gelo", "tentação", "hortelã", "canela", "cravo", "baunilha", "mel", "açúcar", "adoçante",
+        # 201-240
         "sal", "pimenta", "azeite", "vinagre", "alho", "cebola", "tomate", "alface", "cenoura", "batata",
         "arroz", "feijão", "macarrão", "carne", "frango", "peixe", "camarão", "sushi", "pizza", "hambúrguer",
         "pastel", "coxinha", "pão de queijo", "empada", "folhado", "croissant", "waffle", "panqueca", "crepe", "churros",
-        "pipoca", "algodão doce", "maçã do amor", "carrossel", "montanha russa", "roda gigante", "parque", "circo", "teatro", "show",
+        "sabor", "algodão doce", "maçã do amor", "carrossel", "montanha russa", "roda gigante", "namorados", "circo", "teatro", "show",
+        # 241-280
         "concerto", "museu", "exposição", "galeria", "arte", "pintura", "escultura", "desenho", "esboço", "grafite",
-        "mural", "parede", "teto", "chão", "tapete", "almofada", "pufe", "rede", "balanço", "cadeira",
-        "mesa", "balcão", "armário", "gaveta", "prateleira", "cabide", "espelho", "quadro", "relógio", "luminária",
-        "lustre", "abajur", "vela", "castiçal", "fósforo", "isqueiro", "lanterna", "farol", "poste", "luz",
-        "sombra", "reflexo", "brilho", "faísca", "chama", "fogo", "fumaça", "cinza", "carvão", "lenha",
-        "lareira", "aquecedor", "ventilador", "ar condicionado", "clima", "tempo", "previsão", "nuvem", "céu", "azul",
-        "branco", "preto", "cinza", "vermelho", "rosa", "azul marinho", "verde", "amarelo", "laranja", "roxo",
+        "mural", "parede", "teto", "chão", "encontro", "pufe", "rede", "balanço", "cadeira",
+        "mesa", "balcão", "armário", "gaveta", "prateleira", "cabide", "olhar", "paixão", "luminária",
+        "lustre", "abajur", "chama", "castiçal", "fósforo", "isqueiro", "lanterna", "afeto", "poste", "luz",
+        # 281-320
+        "sombra", "reflexo", "brilho", "pele", "suspiro", "fumaça", "cinza", "carvão", "lenha",
+        "sintonia", "aquecedor", "ventilador", "ar condicionado", "clima", "previsão", "sorriso", "céu", "azul",
+        "branco", "preto", "vermelho", "rosa", "azul marinho", "verde", "amarelo", "roxo",
         "violeta", "lilás", "marrom", "bege", "dourado", "prateado", "bronze", "arco-íris", "prisma", "lente",
-        "óculos", "olhar", "olho", "cílio", "sobrancelha", "testa", "bochecha", "nariz", "boca", "lábio",
+        "óculos", "toque", "olho", "cílio", "sobrancelha", "testa", "bochecha", "nariz", "boca", "lábio",
+        # 321-366
         "dente", "língua", "queixo", "pescoço", "ombro", "braço", "cotovelo", "pulso", "mão", "dedo",
-        "unha", "palma", "peito", "coração", "batida", "pulso", "respiração", "fôlego", "suspiro", "risada",
-        "gargalhada", "sorriso", "covinha", "olhar", "piscada", "aceno", "gesto", "toque", "carinho", "cafuné",
-        "massagem", "abraço", "aperto", "beijo", "estalo", "mordida", "cócegas", "brincadeira", "susto", "surpresa",
+        "unha", "palma", "peito", "coração", "batida", "respiração", "fôlego", "gargalhada", "risada",
+        "covinha", "piscada", "aceno", "gesto", "cócegas", "brincadeira", "susto", "surpresa",
         "presente", "embrulho", "laço", "fita", "papel", "cartão", "mensagem", "notificação", "ligação", "conversa",
-        "papo", "áudio", "vídeo", "foto", "selfie", "lembrança", "memória", "passado", "presente do dia", "futuro"
+        "papo", "áudio", "vídeo", "foto", "selfie", "lembrança", "memória", "passado", "presente do dia", "futuro",
+        "magnetismo", "sedução", "fidelidade", "atração", "sinceridade", "fascínio"
     ]
     
     # O tm_yday vai de 1 até 366 em anos bissextos
