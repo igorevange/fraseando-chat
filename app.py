@@ -42,12 +42,11 @@ def palavra_do_dia():
 st.session_state.palavra = palavra_do_dia()
 
 # ==========================================
-# SISTEMA DE LOGIN (Sem dar pistas na Label)
+# SISTEMA DE LOGIN
 # ==========================================
 if "user" not in st.session_state:
     st.markdown("## 💬 Chat Privado")
     
-    # Campo oculto por asteriscos
     user_input = st.text_input("Código de Acesso", type="password")
     
     if st.button("Entrar"):
@@ -67,36 +66,39 @@ user = st.session_state.user
 st.markdown(f"### 💬 Chat Privado • *Palavra do Dia:* **{st.session_state.palavra}**")
 
 # ==========================================
-# FUNÇÕES DO BANCO DE DADOS (Seguras)
+# FUNÇÕES DO BANCO DE DADOS
 # ==========================================
 def carregar():
     try:
-        # Puxa as últimas 50 mensagens ordenadas por data
         res = supabase.table("mensagens").select("*").order("created_at", ascending=True).limit(50).execute()
-        
-        # Trata o formato de resposta do Supabase (evita travar se estiver vazia)
         if hasattr(res, 'data'):
             return res.data
         elif isinstance(res, dict) and 'data' in res:
             return res['data']
         return []
     except Exception as e:
-        # Se o banco falhar, o app abre vazio em vez de quebrar na tela
         return []
 
 def salvar(texto):
+    # Retorna True se salvou com sucesso, ou False se deu erro
     try:
         palavra = st.session_state.get('palavra', 'Não definida')
         
-        # Envia apenas o essencial. Id e data o Supabase gera sozinho.
-        supabase.table("mensagens").insert({
+        # Faz a inserção e força o script a esperar a resposta do servidor
+        resposta = supabase.table("mensagens").insert({
             "usuario": user,
             "mensagem": texto,
-            "palavra_do_dia": palavra
+            "palavra_do_dia": palabra
         }).execute()
+        
+        # Se a resposta voltou com dados, a gravação funcionou!
+        if hasattr(resposta, 'data') and len(resposta.data) > 0:
+            return True
+        return False
     except Exception as e:
-        # Mostra o erro técnico real na tela caso o banco recuse
-        st.error(f"Erro técnico detectado pelo Supabase: {str(e)}")
+        # Força o erro real a aparecer na tela para sabermos o motivo
+        st.error(f"Erro ao falar com o banco: {str(e)}")
+        return False
 
 # ==========================================
 # CARREGAMENTO E EXIBIÇÃO DO HISTÓRICO
@@ -105,7 +107,6 @@ msgs = carregar()
 
 st.markdown('<div class="chat-container">', unsafe_allow_html=True)
 for m in msgs:
-    # Determina o lado da bolha baseado em quem está olhando o app
     if m["usuario"] == user:
         classe_bolha = "user-bubble"
         identificador = "Você"
@@ -113,20 +114,16 @@ for m in msgs:
         classe_bolha = "partner-bubble"
         identificador = "Amor"
         
-    # Formata a exibição da hora
     hora_formatada = ""
     if "created_at" in m and m["created_at"]:
         try:
-            # Pega apenas os caracteres do horário (HH:MM)
             hora_formatada = m["created_at"].split("T")[1][:5]
         except:
             hora_formatada = ""
 
-    # Pega a palavra salva de forma segura
     palavra_salva = m.get('palavra_do_dia', '---')
     texto_mensagem = m.get('mensagem', '')
 
-    # Desenha a bolha na tela montando a string de forma limpa para não dar erro de sintaxe
     html_bolha = f"""
     <div class="bubble {classe_bolha}">
         {texto_mensagem}
@@ -138,7 +135,7 @@ for m in msgs:
 st.markdown('</div>', unsafe_allow_html=True)
 
 # ==========================================
-# ÁREA DE ENVIO DE MENSAGENS (Formulário Travado)
+# ÁREA DE ENVIO DE MENSAGENS
 # ==========================================
 st.markdown("---")
 
@@ -152,9 +149,9 @@ with st.form(key="formulario_chat", clear_on_submit=True):
         else:
             palavra_atual = st.session_state.palavra.lower()
             
-            # Validação obrigatória da palavra do dia
-            if palavra_atual in msg_input.lower():
-                salvar(msg_input)
-                st.rerun() # Atualiza a tela para mostrar a bolha nova na hora
+            if palabra_atual in msg_input.lower():
+                # Só recarrega a tela se a função retornar que salvou de verdade!
+                if salvar(msg_input):
+                    st.rerun()
             else:
                 st.error("Sua frase não contém a palavra do dia! Tente novamente.")
