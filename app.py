@@ -8,7 +8,7 @@ import pandas as pd
 # ==========================================
 st.set_page_config(page_title="Chat do Casal", page_icon="💬", layout="centered")
 
-# Estilização limpa para o visual escuro e tags de tempo
+# Estilização limpa para o visual escuro, tags de tempo e liberação do botão
 st.markdown("""
 <style>
     .stApp { background-color: #121212; color: #FFFFFF; }
@@ -18,6 +18,13 @@ st.markdown("""
     /* Margem segura para a última mensagem não sumir atrás do input fixo */
     .main .block-container {
         padding-bottom: 120px !important;
+    }
+
+    /* FORÇA O BOTÃO DA SETINHA A FICAR ATIVO MESMO COM O INPUT VAZIO */
+    button[aria-label="Send message"] {
+        pointer-events: auto !important;
+        cursor: pointer !important;
+        opacity: 1 !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -99,8 +106,6 @@ def salvar(texto):
 # ==========================================
 # BLOCO DO HISTÓRICO EM TEMPO REAL (Fragment)
 # ==========================================
-# O decorator @st.fragment faz apenas este bloco se atualizar em segundo plano,
-# buscando novas mensagens a cada 1 segundo sem travar a digitação do usuário.
 @st.fragment(run_every=1.0)
 def exibir_historico_tempo_real():
     lista_mensagens = carregar()
@@ -109,7 +114,6 @@ def exibir_historico_tempo_real():
         for m in lista_mensagens:
             msg_usuario = m.get("usuario")
             
-            # Define o ÍCONE e o NOME de quem enviou
             if msg_usuario == "be":
                 avatar_icone = "🦇"
                 nome_exibicao = "Bê" if user == "be" else "Meu Bê"
@@ -120,13 +124,11 @@ def exibir_historico_tempo_real():
                 avatar_icone = "👤"
                 nome_exibicao = msg_usuario
 
-            # Define o LADO da tela (user = direita, assistant = esquerda)
             if msg_usuario == user:
                 lado_tela = "user"
             else:
                 lado_tela = "assistant"
 
-            # TRATAMENTO SEGURO DA DATA E HORÁRIO (Usando Pandas)
             carimbo_tempo = ""
             criado_em = m.get("created_at")
             
@@ -157,13 +159,14 @@ exibir_historico_tempo_real()
 # ==========================================
 msg_input = st.chat_input("Digite sua mensagem...")
 
-if msg_input:
+# Mudança crucial aqui: capturamos se o evento de clique existiu (is not None)
+if msg_input is not None:
     if msg_input.strip() == "":
         st.warning("Tem que digitar alguma coisa antes de enviar né.")
     else:
         palavra_atual = st.session_state.palavra.lower()
         if palavra_atual in msg_input.lower():
             if salvar(msg_input):
-                st.rerun() # Atualiza o app imediatamente ao enviar
+                st.rerun() 
         else:
             st.error("Seu lesado(a), tua frase não contém a palavra do dia! Tente novamente.")
