@@ -75,10 +75,7 @@ def palavra_do_dia():
         "papo", "áudio", "vídeo", "foto", "selfie", "lembrança", "memória", "passado", "presente do dia", "futuro"
     ]
     
-    # O tm_yday vai de 1 até 366 em anos bissextos
     dia_ano = datetime.datetime.now().timetuple().tm_yday
-    
-    # Usamos o operador % para garantir que o índice sempre caia num intervalo válido da lista
     indice = (dia_ano - 1) % len(palavras)
     return palavras[indice]
 
@@ -141,54 +138,93 @@ def salvar(texto):
         return False
 
 # ==========================================
-# BLOCO DO HISTÓRICO EM TEMPO REAL (Fragment)
+# BLOCO DO HISTÓRICO EM ABAS DIÁRIAS (Fragment)
 # ==========================================
 @st.fragment(run_every=1.0)
 def exibir_historico_tempo_real():
     lista_mensagens = carregar()
+    
+    # Pega o dia de hoje no formato de data brasileiro
+    data_hoje_str = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=-3))).strftime("%d/%m/%Y")
 
     if lista_mensagens:
+        # Agrupa as mensagens com base no dia em que foram enviadas
+        mensagens_por_dia = {}
+        
         for m in lista_mensagens:
-            msg_usuario = m.get("usuario")
-            
-            if msg_usuario == "be":
-                avatar_icone = "🦇"
-                nome_exibicao = "Bê" if user == "be" else "Meu Bê"
-            elif msg_usuario == "macaquinha":
-                avatar_icone = "🐵"
-                nome_exibicao = "Macaquinha" if user == "macaquinha" else "Minha Macaquinha 💜"
-            else:
-                avatar_icone = "👤"
-                nome_exibicao = msg_usuario
-
-            if msg_usuario == user:
-                lado_tela = "user"
-            else:
-                lado_tela = "assistant"
-
-            carimbo_tempo = ""
             criado_em = m.get("created_at")
-            
             if criado_em:
                 try:
-                    dt = pd.to_datetime(criado_em, utc=True)
-                    dt_brasil = dt.tz_convert("America/Sao_Paulo")
-                    carimbo_tempo = dt_brasil.strftime("%d/%m/%Y %H:%M")
+                    dt_br = pd.to_datetime(criado_em, utc=True).tz_convert("America/Sao_Paulo")
+                    data_formatada = dt_br.strftime("%d/%m/%Y")
                 except:
-                    carimbo_tempo = ""
+                    data_formatada = "Outros"
+            else:
+                data_formatada = "Outros"
+                
+            if data_formatada not in mensagens_por_dia:
+                mensagens_por_dia[data_formatada] = []
+            mensagens_por_dia[data_formatada].append(m)
 
-            palavra_salva = m.get('palavra_do_dia', '---')
-            texto_mensagem = m.get('mensagem', '')
+        # Filtra e ordena as abas antigas
+        dias_passados = sorted([dia for dia in mensagens_por_dia.keys() if dia != data_hoje_str], key=lambda x: pd.to_datetime(x, format="%d/%m/%Y"))
+        
+        # Cria as abas. A aba "💬 Hoje" sempre encabeça a lista
+        titulos_abas = ["💬 Hoje"] + dias_passados
+        abas_criadas = st.tabs(titulos_abas)
 
-            if texto_mensagem:
-                with st.chat_message(lado_tela, avatar=avatar_icone):
-                    st.markdown(f"**{nome_exibicao}**")
-                    st.write(texto_mensagem)
-                    st.markdown(f'<span class="keyword-tag">🔑 Palavra: {palavra_salva}</span> <span class="time-tag">{carimbo_tempo}</span>', unsafe_allow_html=True)
+        # Renderizador interno de bolhas de mensagem
+        def renderizar_mensagens(lista):
+            for m in lista:
+                msg_usuario = m.get("usuario")
+                
+                if msg_usuario == "be":
+                    avatar_icone = "🦇"
+                    nome_exibicao = "Bê" if user == "be" else "Meu Bê"
+                elif msg_usuario == "macaquinha":
+                    avatar_icone = "🐵"
+                    nome_exibicao = "Macaquinha" if user == "macaquinha" else "Minha Macaquinha 💜"
+                else:
+                    avatar_icone = "👤"
+                    nome_exibicao = msg_usuario
+
+                lado_tela = "user" if msg_usuario == user else "assistant"
+
+                carimbo_tempo = ""
+                criado_em_msg = m.get("created_at")
+                if criado_em_msg:
+                    try:
+                        dt = pd.to_datetime(criado_em_msg, utc=True)
+                        dt_brasil = dt.tz_convert("America/Sao_Paulo")
+                        carimbo_tempo = dt_brasil.strftime("%d/%m/%Y %H:%M")
+                    except:
+                        carimbo_tempo = ""
+
+                palavra_salva = m.get('palavra_do_dia', '---')
+                texto_mensagem = m.get('mensagem', '')
+
+                if texto_mensagem:
+                    with st.chat_message(lado_tela, avatar=avatar_icone):
+                        st.markdown(f"**{nome_exibicao}**")
+                        st.write(texto_mensagem)
+                        st.markdown(f'<span class="keyword-tag">🔑 Palavra: {palavra_salva}</span> <span class="time-tag">{carimbo_tempo}</span>', unsafe_allow_html=True)
+
+        # Popula a Aba "💬 Hoje"
+        with abas_criadas[0]:
+            mensagens_hoje = mensagens_por_dia.get(data_hoje_str, [])
+            if mensagens_hoje:
+                renderizar_mensagens(mensagens_hoje)
+            else:
+                st.info("Nenhuma mensagem enviada hoje ainda. Comece a conversar na barra abaixo!")
+
+        # Popula as Abas dos dias anteriores
+        for idx, dia in enumerate(dias_passados):
+            with abas_criadas[idx + 1]:
+                renderizar_mensagens(mensagens_por_dia[dia])
     else:
         st.info("Nenhuma mensagem enviada ainda. Seja o(a) primeiro(a) a quebrar o gelo com a palavra do dia!")
 
-# Executa a caixa isolada do histórico
+# Executa o histórico em abas dinâmicas
 exibir_historico_tempo_real()
 
 # ==========================================
