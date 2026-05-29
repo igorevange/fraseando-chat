@@ -105,7 +105,7 @@ if lista_mensagens:
         # Define o ÍCONE e o NOME de quem enviou
         if msg_usuario == "be":
             avatar_icone = "🦇"
-            nome_exibicao = "Bê" if user == "be" else "Meu Amor (Bê)"
+            nome_exibicao = "Bê" if user == "be" else "Meu Bê"
         elif msg_usuario == "macaquinha":
             avatar_icone = "🐵"
             nome_exibicao = "Macaquinha" if user == "macaquinha" else "Minha Macaquinha 💜"
@@ -146,7 +146,7 @@ else:
 # ÁREA DE ENVIO DE MENSAGENS (Fixa na Base com Seta)
 # ==========================================
 # O st.chat_input cria automaticamente a caixa fixa embaixo com o ícone de envio à direita
-msg_input = st.chat_input("Digite sua mensagem para o seu amor...")
+msg_input = st.chat_input("Sua frase precisa conter a palavra do dia...")
 
 if msg_input:
     if msg_input.strip() == "":
@@ -159,4 +159,4 @@ if msg_input:
             if salvar(msg_input):
                 st.rerun()  # Atualiza a tela instantaneamente
         else:
-            st.error("Sua frase não contém a palavra do dia! Tente novamente.")
+            st.error("Sua frase não contém a palavra do dia! Seu lesado(a)!")
