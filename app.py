@@ -35,13 +35,13 @@ supabase: Client = create_client(url, key)
 def palavra_do_dia():
     palavras = [
         # 1-40
-        "espelho", "morango", "cafuné", "destino", "sussurro", "jardim", "arrepio", "pipoca", "cinema", "almofada",
+        "espelho", "romantismo", "cafuné", "destino", "sussurro", "jardim", "arrepio", "pipoca", "cinema", "almofada",
         "coberta", "chocolate", "abraço", "segredo", "canção", "viagem", "provocação", "parque", "sorvete", "beijo",
         "nuvem", "estrela", "sol", "chuva", "mordida", "mar", "praia", "concha", "farol", "barco",
         "bússola", "mapa", "tesouro", "chave", "cadeado", "carta", "romance", "fotografia", "quadro", "moldura",
         # 41-80
         "instante", "flor", "pétala", "perfume", "aroma", "tempero", "receita", "pegada", "jantar", "vela",
-        "fogo", "lareira", "faísca", "calor", "inverno", "outono", "primavera", "verão", "sol do dia", "amanhecer",
+        "fogo", "lareira", "faísca", "furacão", "inverno", "outono", "primavera", "verão", "sol do dia", "amanhecer",
         "entardecer", "crepúsculo", "noite", "madrugada", "relógio", "tempo", "lingerie", "agenda", "plano", "sonho",
         "desejo", "promessa", "aliança", "anel", "colar", "pulseira", "brinco", "cumplicidade", "pente", "escova",
         # 81-120
@@ -51,9 +51,9 @@ def palavra_do_dia():
         "livro", "página", "capítulo", "história", "conto", "poesia", "verso", "rima", "música", "nota",
         # 121-160
         "acorde", "ritmo", "dança", "passo", "baile", "festa", "balão", "confete", "bolo", "doce",
-        "bala", "chiclete", "pirulito", "gelatina", "pudim", "torta", "mousse", "fantasia", "picolé", "fruta",
-        "maçã", "banana", "ataque", "uva", "laranja", "limão", "abacaxi", "melancia", "melão", "pêssego",
-        "ameixa", "cereja", "framboesa", "amora", "mirtilo", "kiwi", "manga", "maracujá", "goiaba", "caju",
+        "bala", "chiclete", "pirulito", "gelatina", "pudim", "torta", "mousse", "fantasia", "picolé", "luxúria",
+        "calor", "entrega", "ataque", "conquista", "carinho", "calafrio", "adrenalina", "batom", "instinto", "calcanhar",
+        "nuca", "enlace", "sedutor", "magnetismo", "repuxo", "fetiche", "proximidade", "quentura", "pele", "toque",
         # 161-200
         "coco", "castanha", "noz", "amêndoa", "amendoim", "delírio", "biscoito", "bolacha", "pão", "torrada",
         "manteiga", "requeijão", "queijo", "presunto", "ovo", "omelete", "tapioca", "cereal", "leite", "iogurte",
@@ -70,18 +70,18 @@ def palavra_do_dia():
         "mesa", "balcão", "armário", "gaveta", "prateleira", "cabide", "olhar", "paixão", "luminária",
         "lustre", "abajur", "chama", "castiçal", "fósforo", "isqueiro", "lanterna", "afeto", "poste", "luz",
         # 281-320
-        "sombra", "reflexo", "brilho", "pele", "suspiro", "fumaça", "cinza", "carvão", "lenha",
+        "sombra", "reflexo", "brilho", "garganta", "suspiro", "fumaça", "cinza", "carvão", "lenha",
         "sintonia", "aquecedor", "ventilador", "ar condicionado", "clima", "previsão", "sorriso", "céu", "azul",
         "branco", "preto", "vermelho", "rosa", "azul marinho", "verde", "amarelo", "roxo",
         "violeta", "lilás", "marrom", "bege", "dourado", "prateado", "bronze", "arco-íris", "prisma", "lente",
-        "óculos", "toque", "olho", "cílio", "sobrancelha", "testa", "bochecha", "nariz", "boca", "lábio",
+        "óculos", "enlace", "olho", "cílio", "sobrancelha", "testa", "bochecha", "nariz", "boca", "lábio",
         # 321-366
         "dente", "língua", "queixo", "pescoço", "ombro", "braço", "cotovelo", "pulso", "mão", "dedo",
         "unha", "palma", "peito", "coração", "batida", "respiração", "fôlego", "gargalhada", "risada",
         "covinha", "piscada", "aceno", "gesto", "cócegas", "brincadeira", "susto", "surpresa",
         "presente", "embrulho", "laço", "fita", "papel", "cartão", "mensagem", "notificação", "ligação", "conversa",
         "papo", "áudio", "vídeo", "foto", "selfie", "lembrança", "memória", "passado", "presente do dia", "futuro",
-        "magnetismo", "sedução", "fidelidade", "atração", "sinceridade", "fascínio"
+        "charme", "pegada", "fidelidade", "atração", "sinceridade", "fascínio"
     ]
     
     # O tm_yday vai de 1 até 366 em anos bissextos
