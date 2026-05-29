@@ -147,7 +147,7 @@ def exibir_historico_tempo_real():
                     st.write(texto_mensagem)
                     st.markdown(f'<span class="keyword-tag">🔑 Palavra: {palavra_salva}</span> <span class="time-tag">{carimbo_tempo}</span>', unsafe_allow_html=True)
     else:
-        st.info("Nenhuma mensagem enviada ainda. Seja o primeiro a quebrar o gelo com a palavra do dia!")
+        st.info("Nenhuma mensagem enviada ainda. Seja o(a) primeiro(a) a quebrar o gelo com a palavra do dia!")
 
 # Executa a caixa isolada do histórico
 exibir_historico_tempo_real()
