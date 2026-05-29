@@ -30,12 +30,56 @@ key = st.secrets["SUPABASE_KEY"]
 supabase: Client = create_client(url, key)
 
 # ==========================================
-# FUNÇÃO DA PALAVRA DO DIA
+# FUNÇÃO DA PALAVRA DO DIA (366 Palavras para o Ano Bissexto)
 # ==========================================
 def palavra_do_dia():
-    palavras = ["espelho", "café", "abraço", "sorriso", "destino", "bilhete", "luar"]
+    palavras = [
+        "espelho", "café", "abraço", "sorriso", "destino", "bilhete", "luar", "pipoca", "Cinema", "Almofada",
+        "coberta", "chocolate", "cafuné", "sussurro", "segredo", "canção", "viagem", "parque", "sorvete", "beijo",
+        "nuvem", "estrela", "sol", "chuva", "vento", "mar", "praia", "concha", "Farol", "barco",
+        "bússola", "mapa", "tesouro", "chave", "cadeado", "carta", "carimbo", "fotografia", "quadro", "moldura",
+        "jardim", "flor", "pétala", "perfume", "aroma", "tempero", "receita", "panela", "jantar", "vela",
+        "fogo", "lareira", "faísca", "calor", "inverno", "outono", "primavera", "verão", "sol do dia", "amanhecer",
+        "entardecer", "crepúsculo", "noite", "madrugada", "relógio", "tempo", "calendário", "agenda", "plano", "sonho",
+        "desejo", "promessa", "aliança", "anel", "colar", "pulseira", "brinco", "espelho", "pente", "escova",
+        "toalha", "banho", "espuma", "bolha", "sabonete", "shampoo", "creme", "perfume", "roupa", "casaco",
+        "meia", "sapato", "chinelo", "pijama", "cama", "lençol", "travesseiro", "colchão", "quarto", "sala",
+        "cozinha", "varanda", "quintal", "portão", "janela", "cortina", "tapete", "sofá", "poltrona", "estante",
+        "livro", "página", "capítulo", "história", "conto", "poesia", "verso", "rima", "música", "nota",
+        "acorde", "ritmo", "dança", "passo", "baile", "festa", "balão", "confete", "bolo", "doce",
+        "bala", "chiclete", "pirulito", "gelatina", "pudim", "torta", "mousse", "sorvete", "picolé", "fruta",
+        "maçã", "banana", "morango", "uva", "laranja", "limão", "abacaxi", "melancia", "melão", "pêssego",
+        "ameixa", "cereja", "framboesa", "amora", "mirtilo", "kiwi", "manga", "maracujá", "goiaba", "caju",
+        "coco", "castanha", "noz", "amêndoa", "amendoim", "pipoca", "biscoito", "bolacha", "pão", "torrada",
+        "manteiga", "requeijão", "queijo", "presunto", "ovo", "omelete", "tapioca", "cereal", "leite", "Iogurte",
+        "suco", "chá", "café", "chocolate", "achocolatado", "água", "refrigerante", "cerveja", "vinho", "champanhe",
+        "coquetel", "gelo", "limão", "hortelã", "canela", "cravo", "baunilha", "mel", "açúcar", "adoçante",
+        "sal", "pimenta", "azeite", "vinagre", "alho", "cebola", "tomate", "alface", "cenoura", "batata",
+        "arroz", "feijão", "macarrão", "carne", "frango", "peixe", "camarão", "sushi", "pizza", "hambúrguer",
+        "pastel", "coxinha", "pão de queijo", "empada", "folhado", "croissant", "waffle", "panqueca", "crepe", "churros",
+        "pipoca", "algodão doce", "maçã do amor", "carrossel", "montanha russa", "roda gigante", "parque", "circo", "teatro", "show",
+        "concerto", "museu", "exposição", "galeria", "arte", "pintura", "escultura", "desenho", "esboço", "grafite",
+        "mural", "parede", "teto", "chão", "tapete", "almofada", "pufe", "rede", "balanço", "cadeira",
+        "mesa", "balcão", "armário", "gaveta", "prateleira", "cabide", "espelho", "quadro", "relógio", "luminária",
+        "lustre", "abajur", "vela", "castiçal", "fósforo", "isqueiro", "lanterna", "farol", "poste", "luz",
+        "sombra", "reflexo", "brilho", "faísca", "chama", "fogo", "fumaça", "cinza", "carvão", "lenha",
+        "lareira", "aquecedor", "ventilador", "ar condicionado", "clima", "tempo", "previsão", "nuvem", "céu", "azul",
+        "branco", "preto", "cinza", "vermelho", "rosa", "azul marinho", "verde", "amarelo", "laranja", "roxo",
+        "violeta", "lilás", "marrom", "bege", "dourado", "prateado", "bronze", "arco-íris", "prisma", "lente",
+        "óculos", "olhar", "olho", "cílio", "sobrancelha", "testa", "bochecha", "nariz", "boca", "lábio",
+        "dente", "língua", "queixo", "pescoço", "ombro", "braço", "cotovelo", "pulso", "mão", "dedo",
+        "unha", "palma", "peito", "coração", "batida", "pulso", "respiração", "fôlego", "suspiro", "risada",
+        "gargalhada", "sorriso", "covinha", "olhar", "piscada", "aceno", "gesto", "toque", "carinho", "cafuné",
+        "massagem", "abraço", "aperto", "beijo", "estalo", "mordida", "cócegas", "brincadeira", "susto", "surpresa",
+        "presente", "embrulho", "laço", "fita", "papel", "cartão", "mensagem", "notificação", "ligação", "conversa",
+        "papo", "áudio", "vídeo", "foto", "selfie", "lembrança", "memória", "passado", "presente do dia", "futuro"
+    ]
+    
+    # O tm_yday vai de 1 até 366 em anos bissextos
     dia_ano = datetime.datetime.now().timetuple().tm_yday
-    indice = dia_ano % len(palavras)
+    
+    # Usamos o operador % para garantir que o índice sempre caia num intervalo válido da lista
+    indice = (dia_ano - 1) % len(palavras)
     return palavras[indice]
 
 st.session_state.palavra = palavra_do_dia()
@@ -158,7 +202,7 @@ if msg_input:
     
     # 1ª VALIDAÇÃO: Se a mensagem for EXATAMENTE a palavra do dia sozinha
     if mensagem_limpa == palavra_atual:
-        st.warning(f'Cadê a criatividade? Só "{msg_input.strip()}", é sério?')
+        st.warning(f'Cadê a criatividade? "{msg_input.strip()}", é sério?')
         
     # 2ª VALIDAÇÃO: Se a palavra do dia está contida no meio de uma frase maior
     elif palavra_atual in mensagem_limpa:
