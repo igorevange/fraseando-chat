@@ -155,15 +155,15 @@ exibir_historico_tempo_real()
 # ==========================================
 # ÁREA DE ENVIO DE MENSAGENS (Fixada na base)
 # ==========================================
-msg_input = st.chat_input("Digite sua mensagem para o seu amor...")
+msg_input = st.chat_input("Digite sua mensagem...")
 
 if msg_input:
     if msg_input.strip() == "":
-        st.warning("Por favor, digite uma mensagem antes de enviar.")
+        st.warning("Tem que digitar alguma coisa antes de enviar né.")
     else:
         palavra_atual = st.session_state.palavra.lower()
         if palavra_atual in msg_input.lower():
             if salvar(msg_input):
                 st.rerun() # Atualiza o app imediatamente ao enviar
         else:
-            st.error("Sua frase não contém a palavra do dia! Tente novamente.")
+            st.error("Seu lesado(a), tua frase não contém a palavra do dia! Tente novamente.")
