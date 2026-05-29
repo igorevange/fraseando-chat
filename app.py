@@ -8,7 +8,7 @@ import pandas as pd
 # ==========================================
 st.set_page_config(page_title="Chat do Casal", page_icon="💬", layout="centered")
 
-# Estilização limpa para o visual escuro, tags de tempo e liberação do botão
+# Estilização limpa para o visual escuro e tags de tempo
 st.markdown("""
 <style>
     .stApp { background-color: #121212; color: #FFFFFF; }
@@ -18,13 +18,6 @@ st.markdown("""
     /* Margem segura para a última mensagem não sumir atrás do input fixo */
     .main .block-container {
         padding-bottom: 120px !important;
-    }
-
-    /* FORÇA O BOTÃO DA SETINHA A FICAR ATIVO MESMO COM O INPUT VAZIO */
-    button[aria-label="Send message"] {
-        pointer-events: auto !important;
-        cursor: pointer !important;
-        opacity: 1 !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -159,14 +152,19 @@ exibir_historico_tempo_real()
 # ==========================================
 msg_input = st.chat_input("Digite sua mensagem...")
 
-# Mudança crucial aqui: capturamos se o evento de clique existiu (is not None)
-if msg_input is not None:
-    if msg_input.strip() == "":
-        st.warning("Tem que digitar alguma coisa antes de enviar né.")
+if msg_input:
+    palavra_atual = st.session_state.palavra.lower()
+    mensagem_limpa = msg_input.strip().lower()
+    
+    # 1ª VALIDAÇÃO: Se a mensagem for EXATAMENTE a palavra do dia sozinha
+    if mensagem_limpa == palavra_atual:
+        st.warning(f'Cadê a criatividade? "{msg_input.strip()}", é sério?')
+        
+    # 2ª VALIDAÇÃO: Se a palavra do dia está contida no meio de uma frase maior
+    elif palavra_atual in mensagem_limpa:
+        if salvar(msg_input):
+            st.rerun() 
+            
+    # 3ª VALIDAÇÃO: Se não digitou a palavra de jeito nenhum
     else:
-        palavra_atual = st.session_state.palavra.lower()
-        if palavra_atual in msg_input.lower():
-            if salvar(msg_input):
-                st.rerun() 
-        else:
-            st.error("Oh lesado(a), tua frase não contém a palavra do dia! Tente novamente.")
+        st.error("Seu lesado(a), tua frase não contém a palavra do dia! Tente novamente.")
