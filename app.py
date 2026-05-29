@@ -216,7 +216,7 @@ def exibir_historico_tempo_real():
                         st.write(texto_mensagem)
                         st.markdown(f'<span class="keyword-tag">🔑 Palavra: {palavra_salva}</span> <span class="time-tag">{carimbo_tempo}</span>', unsafe_allow_html=True)
 
-        # Popula a Aba "💬 Hoje"
+        # Popula a Aba "📅 Hoje"
         with abas_criadas[0]:
             mensagens_hoje = mensagens_por_dia.get(data_hoje_str, [])
             if mensagens_hoje:
