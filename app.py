@@ -59,7 +59,7 @@ user = st.session_state.user
 # ==========================================
 # CABEÇALHO DO APP
 # ==========================================
-st.markdown(f"### 💬 Chat Privado •")
+st.markdown(f"### 💬 Chat Privado")
 st.markdown(f"### *Palavra do Dia:* **{st.session_state.palavra}**")
 
 # ==========================================
