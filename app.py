@@ -102,7 +102,7 @@ if lista_mensagens:
         # 1. Define o ÍCONE e o NOME real de quem ESCREVEU a mensagem no banco
         if msg_usuario == "be":
             avatar_icone = "🦇"
-            nome_exibicao = "Bê" if user == "be" else "Meu Amor (Bê)"
+            nome_exibicao = "Bê" if user == "be" else "Meu Bê"
         elif msg_usuario == "macaquinha":
             avatar_icone = "🐵"
             nome_exibicao = "Macaquinha" if user == "macaquinha" else "Minha Macaquinha 💜"
