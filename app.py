@@ -211,4 +211,4 @@ if msg_input:
             
     # 3ª VALIDAÇÃO: Se não digitou a palavra de jeito nenhum
     else:
-        st.error("Seu lesado(a), tua frase não contém a palavra do dia! Tente novamente.")
+        st.error("Oh lesado(a), tua frase não contém a palavra do dia! Tente novamente.")
