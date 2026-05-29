@@ -75,7 +75,10 @@ def palavra_do_dia():
         "papo", "áudio", "vídeo", "foto", "selfie", "lembrança", "memória", "passado", "presente do dia", "futuro"
     ]
     
+    # O tm_yday vai de 1 até 366 em anos bissextos
     dia_ano = datetime.datetime.now().timetuple().tm_yday
+    
+    # Usamos o operador % para garantir que o índice sempre caia num intervalo válido da lista
     indice = (dia_ano - 1) % len(palavras)
     return palavras[indice]
 
@@ -166,10 +169,14 @@ def exibir_historico_tempo_real():
                 mensagens_por_dia[data_formatada] = []
             mensagens_por_dia[data_formatada].append(m)
 
-        # Filtra e ordena as abas antigas
-        dias_passados = sorted([dia for dia in mensagens_por_dia.keys() if dia != data_hoje_str], key=lambda x: pd.to_datetime(x, format="%d/%m/%Y"))
+        # Ordena os dias passados em formato decrescente (mais recentes primeiro)
+        dias_passados = sorted(
+            [dia for dia in mensagens_por_dia.keys() if dia != data_hoje_str], 
+            key=lambda x: pd.to_datetime(x, format="%d/%m/%Y"), 
+            reverse=True
+        )
         
-        # Cria as abas. A aba "💬 Hoje" sempre encabeça a lista
+        # Cria as abas. A aba "💬 Hoje" sempre encabeça a lista à esquerda
         titulos_abas = ["💬 Hoje"] + dias_passados
         abas_criadas = st.tabs(titulos_abas)
 
@@ -217,7 +224,7 @@ def exibir_historico_tempo_real():
             else:
                 st.info("Nenhuma mensagem enviada hoje ainda. Comece a conversar na barra abaixo!")
 
-        # Popula as Abas dos dias anteriores
+        # Popula as Abas dos dias anteriores (em ordem decrescente)
         for idx, dia in enumerate(dias_passados):
             with abas_criadas[idx + 1]:
                 renderizar_mensagens(mensagens_por_dia[dia])
