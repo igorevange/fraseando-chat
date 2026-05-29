@@ -32,7 +32,7 @@ supabase: Client = create_client(url, key)
 # FUNÇÃO DA PALAVRA DO DIA
 # ==========================================
 def palavra_do_dia():
-    # Lista fixa de palavras para cada dia da semana (pode alterar as palavras se quiser)
+    # Lista fixa de palavras para cada dia da semana
     palavras = ["espelho", "café", "abraço", "sorriso", "destino", "bilhete", "luar"]
     dia_ano = datetime.datetime.now().timetuple().tm_yday
     indice = dia_ano % len(palavras)
@@ -122,8 +122,39 @@ for m in msgs:
         except:
             hora_formatada = ""
 
-    # Desenha a bolha na tela
-    st.markdown(f"""
+    # Pega a palavra salva de forma segura
+    palavra_salva = m.get('palavra_do_dia', '---')
+    texto_mensagem = m.get('mensagem', '')
+
+    # Desenha a bolha na tela montando a string de forma limpa para não dar erro de sintaxe
+    html_bolha = f"""
     <div class="bubble {classe_bolha}">
-        {m['mensagem']}
-        <span class="keyword-tag">🔑 Palavra: {m.
+        {texto_mensagem}
+        <span class="keyword-tag">🔑 Palavra: {palavra_salva}</span>
+        <span class="metadata">{identificador} • {hora_formatada}</span>
+    </div>
+    """
+    st.markdown(html_bolha, unsafe_allow_html=True)
+st.markdown('</div>', unsafe_allow_html=True)
+
+# ==========================================
+# ÁREA DE ENVIO DE MENSAGENS (Formulário Travado)
+# ==========================================
+st.markdown("---")
+
+with st.form(key="formulario_chat", clear_on_submit=True):
+    msg_input = st.text_input("Digite sua mensagem:", placeholder="Sua frase precisa conter a palavra do dia de hoje...")
+    botao_enviar = st.form_submit_button(label="Enviar Mensagem")
+
+    if botao_enviar:
+        if msg_input.strip() == "":
+            st.warning("Por favor, digite uma mensagem antes de enviar.")
+        else:
+            palavra_atual = st.session_state.palavra.lower()
+            
+            # Validação obrigatória da palavra do dia
+            if palavra_atual in msg_input.lower():
+                salvar(msg_input)
+                st.rerun() # Atualiza a tela para mostrar a bolha nova na hora
+            else:
+                st.error("Sua frase não contém a palavra do dia! Tente novamente.")
