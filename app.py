@@ -1,6 +1,7 @@
 import streamlit as st
 from supabase import create_client, Client
 import datetime
+import pandas as pd
 
 # ==========================================
 # CONFIGURAÇÃO DA PÁGINA (Precisa ser o primeiro comando)
@@ -99,7 +100,7 @@ if lista_mensagens:
     for m in lista_mensagens:
         msg_usuario = m.get("usuario")
         
-        # 1. Define o ÍCONE e o NOME real de quem ESCREVEU a mensagem no banco
+        # Define o ÍCONE e o NOME de quem enviou
         if msg_usuario == "be":
             avatar_icone = "🦇"
             nome_exibicao = "Bê" if user == "be" else "Meu Bê"
@@ -110,32 +111,35 @@ if lista_mensagens:
             avatar_icone = "👤"
             nome_exibicao = msg_usuario
 
-        # 2. Define o LADO da tela baseado em QUEM ESTÁ OLHANDO o app agora
-        # Se a mensagem do banco for igual ao usuário logado -> Direita ("user")
-        # Se for do parceiro -> Esquerda ("assistant")
+        # Define o LADO da tela (user = direita, assistant = esquerda)
         if msg_usuario == user:
             lado_tela = "user"
         else:
             lado_tela = "assistant"
 
-        # Tratamento do horário
-        hora_formatada = ""
+        # TRATAMENTO SEGURO DA DATA E HORÁRIO (Usando Pandas)
+        carimbo_tempo = ""
         criado_em = m.get("created_at")
-        if criado_em and "T" in criado_em:
+        
+        if criado_em:
             try:
-                hora_formatada = criado_em.split("T")[1][:5]
+                # Converte o texto em data e força a interpretação como UTC
+                dt = pd.to_datetime(criado_em, utc=True)
+                # Converte o fuso diretamente para o Horário de Brasília (-3)
+                dt_brasil = dt.tz_convert("America/Sao_Paulo")
+                # Formata exatamente no modelo solicitado: dd/MM/aaaa HH:mm
+                carimbo_tempo = dt_brasil.strftime("%d/%m/%Y %H:%M")
             except:
-                hora_formatada = ""
+                carimbo_tempo = ""
 
         palavra_salva = m.get('palavra_do_dia', '---')
         texto_mensagem = m.get('mensagem', '')
 
         if texto_mensagem:
-            # Forçamos o lado_tela para o alinhamento correto e o avatar fixo de quem enviou
             with st.chat_message(lado_tela, avatar=avatar_icone):
                 st.markdown(f"**{nome_exibicao}**")
                 st.write(texto_mensagem)
-                st.markdown(f'<span class="keyword-tag">🔑 Palavra: {palavra_salva}</span> <span class="time-tag">{hora_formatada}</span>', unsafe_allow_html=True)
+                st.markdown(f'<span class="keyword-tag">🔑 Palavra: {palavra_salva}</span> <span class="time-tag">{carimbo_tempo}</span>', unsafe_allow_html=True)
 else:
     st.info("Nenhuma mensagem enviada ainda. Seja o primeiro a quebrar o gelo com a palavra do dia!")
 
