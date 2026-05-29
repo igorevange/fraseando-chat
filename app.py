@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit.components.v1 as components
 from supabase import create_client, Client
 import datetime
 import pandas as pd
@@ -8,44 +9,39 @@ import pandas as pd
 # ==========================================
 st.set_page_config(page_title="Chat do Casal", page_icon="💬", layout="centered")
 
-# Estilização básica para o visual escuro, tags de tempo e componentes fixos
+# Estilização básica para o visual escuro e tags de tempo
 st.markdown("""
 <style>
     .stApp { background-color: #121212; color: #FFFFFF; }
     .keyword-tag { font-size: 11px; font-style: italic; color: #FFB7B2; display: block; margin-top: 4px; }
     .time-tag { font-size: 10px; color: #888888; float: right; margin-top: 4px; }
     
-    /* Alinha o container do Streamlit focando na base */
+    /* Margem na base para garantir que o input fixo não tampe as mensagens/alertas */
     .main .block-container {
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-end;
-        padding-bottom: 130px; /* Espaço para o input + alertas */
+        padding-bottom: 140px !important;
     }
 </style>
-
-<script>
-    // Função para rolar a tela do Streamlit até o fim do scroll de forma suave
-    function rolarParaBaixo() {
-        setTimeout(function() {
-            const painelChat = window.parent.document.querySelector('.main .block-container');
-            if (painelChat) {
-                painelChat.scrollTop = painelChat.scrollHeight;
-            } else {
-                window.parent.scrollTo(0, window.parent.document.body.scrollHeight);
-            }
-        }, 100);
-    }
-
-    // Escuta cliques no botão de envio nativo do chat_input
-    window.parent.document.addEventListener('click', function(e) {
-        const elemento = e.target.closest('button');
-        if (elemento && elemento.getAttribute('aria-label') === 'Send message') {
-            rolarParaBaixo();
-        }
-    });
-</script>
 """, unsafe_allow_html=True)
+
+# Script injetado via componente que força o scroll da janela inteira para o final absoluto
+def injetar_scroll_automatico():
+    components.html(
+        """
+        <script>
+            function rolarFim() {
+                // Rola a página do Streamlit de dentro para fora
+                window.parent.scrollTo({
+                    top: window.parent.document.body.scrollHeight,
+                    behavior: 'smooth'
+                });
+            }
+            // Executa imediatamente e garante uma execução 300ms depois (tempo do Streamlit renderizar o erro)
+            rolarFim();
+            setTimeout(rolarFim, 300);
+        </script>
+        """,
+        height=0, # Invisível na tela
+    )
 
 # ==========================================
 # CONEXÃO COM O SUPABASE (Puxando dos Secrets)
@@ -175,7 +171,7 @@ msg_input = st.chat_input("Digite sua mensagem para o seu amor...")
 if msg_input:
     if msg_input.strip() == "":
         st.warning("Por favor, digite uma mensagem antes de enviar.")
-        st.markdown("<script>rolarParaBaixo();</script>", unsafe_allow_html=True)
+        injetar_scroll_automatico()
     else:
         palavra_atual = st.session_state.palavra.lower()
         if palavra_atual in msg_input.lower():
@@ -183,5 +179,10 @@ if msg_input:
                 st.rerun()
         else:
             st.error("Sua frase não contém a palavra do dia! Tente novamente.")
-            # Força a rolagem imediata se o bloco de erro vermelho for acionado
-            st.markdown("<script>rolarParaBaixo();</script>", unsafe_allow_html=True)
+            # Quando a mensagem de erro vermelha aparece, chamamos o injetor para descer a tela
+            injetar_scroll_automatico()
+
+# Mantém a tela na base ao carregar o histórico inicialmente
+if "inicializado" not in st.session_state:
+    st.session_state.inicializado = True
+    injetar_scroll_automatico()
