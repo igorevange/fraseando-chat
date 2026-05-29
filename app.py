@@ -158,7 +158,7 @@ if msg_input:
     
     # 1ª VALIDAÇÃO: Se a mensagem for EXATAMENTE a palavra do dia sozinha
     if mensagem_limpa == palavra_atual:
-        st.warning(f'Cadê a criatividade? só "{msg_input.strip()}", é sério?')
+        st.warning(f'Cadê a criatividade? Só "{msg_input.strip()}", é sério?')
         
     # 2ª VALIDAÇÃO: Se a palavra do dia está contida no meio de uma frase maior
     elif palavra_atual in mensagem_limpa:
