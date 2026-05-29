@@ -144,8 +144,7 @@ def salvar(texto):
             except:
                 pass
 
-        # Enviamos apenas o essencial para o banco
-        # O 'created_at' e o 'id' o Supabase gera sozinho automaticamente lá!
+        # Tentativa de envio
         supabase.table("mensagens").insert({
             "usuario": st.session_state.user,
             "mensagem": texto,
@@ -153,8 +152,8 @@ def salvar(texto):
         }).execute()
         
     except Exception as e:
-        # Evita que a tela trave com erro técnico se o banco chiar
-        st.error(f"Erro ao salvar mensagem no banco de dados. Verifique a tabela.")
+        # ISSO AQUI VAI MOSTRAR O ERRO REAL NA TELA DO CHAT
+        st.error(f"Erro técnico detectado: {str(e)}")
 
 def aplicar_highlight(text, word):
     return re.sub(f"({word})", r"<span class='highlight'>\1</span>", text, flags=re.I)
