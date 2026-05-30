@@ -75,7 +75,7 @@ def palavra_do_dia():
     ]
     
     # O tm_yday vai de 1 até 366 em anos bissextos
-    dia_ano = datetime.datetime.now().timetuple().tm_yday
+    dia_ano = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=-3))).timetuple().tm_yday
     
     # Usamos o operador % para garantir que o índice sempre caia num intervalo válido da lista
     indice = (dia_ano - 1) % len(palavras)
