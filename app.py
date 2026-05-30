@@ -184,7 +184,7 @@ def exibir_historico_tempo_real():
             for m in lista:
                 msg_usuario = m.get("usuario")
                 
-                if msg_usuario == "be":
+                if msg_usuario == "be0":
                     avatar_icone = "🦇"
                     nome_exibicao = "Bê" if user == "be" else "Meu Bê"
                 elif msg_usuario == "macaquinha":
